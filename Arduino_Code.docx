@@ -1,0 +1,34 @@
+#include <ESP32Servo.h>
+
+Servo myServo;
+const int servoPin = 13;
+
+void setup() {
+  Serial.begin(115200);                  // Start serial communication
+  myServo.attach(servoPin, 500, 2400);   // Attach servo with custom pulse range
+  myServo.write(90);                     // Start at center
+  Serial.println("Ready for input: A, B, C...");
+}
+
+void loop() {
+if (Serial.available() > 0) {
+  char input = Serial.read();
+
+  if (input == '\n' || input == '\r') {
+    return; // Ignore newline or carriage return
+  }
+
+  if (input == 'A') {
+    myServo.write(0);
+    Serial.println("Moved to 0 degrees");
+  } else if (input == 'B') {
+    myServo.write(90);
+    Serial.println("Moved to 90 degrees");
+  } else if (input == 'C') {
+    myServo.write(180);
+    Serial.println("Moved to 180 degrees");
+  } else {
+    Serial.println("Unknown command.");
+  }
+}
+}

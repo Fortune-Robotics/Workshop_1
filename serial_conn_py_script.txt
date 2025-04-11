@@ -1,0 +1,52 @@
+import rclpy
+from rclpy.node import Node
+import serial
+import threading
+
+class ESP32SerialNode(Node):
+    def __init__(self):
+        super().__init__('esp32_serial_node')
+
+        self.port = '/dev/ttyUSB0'  # Adjust as needed
+        self.baud = 115200
+
+        try:
+            self.ser = serial.Serial(self.port, self.baud, timeout=1)
+            self.get_logger().info(f"Connected to {self.port} at {self.baud} baud")
+        except serial.SerialException as e:
+            self.get_logger().error(f"Serial error: {e}")
+            return
+
+        # Read from serial every 0.1s
+        self.create_timer(0.1, self.read_from_serial)
+
+        # Start a thread to handle user input
+        threading.Thread(target=self.user_input_loop, daemon=True).start()
+
+    def read_from_serial(self):
+        if self.ser.in_waiting > 0:
+            line = self.ser.readline().decode().strip()
+            self.get_logger().info(f"Received: {line}")
+
+    def user_input_loop(self):
+        while rclpy.ok():
+            try:
+                user_input = input("Send to ESP32: ").strip()
+                if user_input:
+                    self.ser.write((user_input + '\n').encode())
+                    self.get_logger().info(f"Sent: {user_input}")
+            except Exception as e:
+                self.get_logger().error(f"Input error: {e}")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ESP32SerialNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
