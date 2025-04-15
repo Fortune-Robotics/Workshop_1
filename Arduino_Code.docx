@@ -1,12 +1,12 @@
 #include <ESP32Servo.h>
 
 Servo myServo;
-const int servoPin = 13;
+const int servoPin = 13; //Motor Pin
 
 void setup() {
-  Serial.begin(115200);                  // Start serial communication
-  myServo.attach(servoPin, 500, 2400);   // Attach servo with custom pulse range
-  myServo.write(90);                     // Start at center
+  Serial.begin(115200);                  
+  myServo.attach(servoPin, 500, 2400);   
+  myServo.write(90);                     
   Serial.println("Ready for input: A, B, C...");
 }
 
