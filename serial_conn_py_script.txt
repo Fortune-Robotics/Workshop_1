@@ -7,7 +7,7 @@ class ESP32SerialNode(Node):
     def __init__(self):
         super().__init__('esp32_serial_node')
 
-        self.port = '/dev/ttyUSB0'  # Adjust as needed
+        self.port = '/dev/ttyUSB0'
         self.baud = 115200
 
         try:
@@ -20,7 +20,7 @@ class ESP32SerialNode(Node):
         # Read from serial every 0.1s
         self.create_timer(0.1, self.read_from_serial)
 
-        # Start a thread to handle user input
+        # Start a thread for user input
         threading.Thread(target=self.user_input_loop, daemon=True).start()
 
     def read_from_serial(self):
